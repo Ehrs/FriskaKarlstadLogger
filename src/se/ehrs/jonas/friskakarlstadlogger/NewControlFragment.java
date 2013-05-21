@@ -1,8 +1,18 @@
 package se.ehrs.jonas.friskakarlstadlogger;
 
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -34,15 +44,24 @@ public class NewControlFragment extends Fragment {
             
             @Override
             public void result(Result decodedCode) {
+            	System.out.println("DEBUG 1: We have a code!");
                 String text = decodedCode.getText();
                 Matcher matcher = FRISKA_KARLSTAD_QR_PATTERN.matcher(text);
                 if (matcher.matches()) {
-                    int controlNumber = Integer.parseInt(matcher.group(1));
-                    String controlCode = matcher.group(2);
-                    long timestamp = decodedCode.getTimestamp();
-                    cameraFragment.startCameraCampure();
+                	String timestamp = String.valueOf(decodedCode.getTimestamp());
+                    Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
+                    editor.putString(timestamp, text).apply();
                 } else {
-                    System.out.println("Could not parse '"+decodedCode.getText()+"'");
+                    System.out.println("DEBUG 3: This cannot be a Friska Karlstad Code: '"+decodedCode.getText()+"'");
+                }
+                Map<String, ?> allPrefs = getActivity().getPreferences(Context.MODE_PRIVATE).getAll();
+                System.out.println(String.format("DEBUG 4: You have %d prefs", allPrefs.size()));
+                for (Entry<String, ?> entry : allPrefs.entrySet()) {
+                	System.out.println("DEBUG 5: "+new Timestamp(Long.parseLong(entry.getKey())).toString());
+                	Object control = entry.getValue();
+                	if (control instanceof String) {
+                		System.out.println("DEBUG 5b: "+control.toString());
+                	}
                 }
             }
         };

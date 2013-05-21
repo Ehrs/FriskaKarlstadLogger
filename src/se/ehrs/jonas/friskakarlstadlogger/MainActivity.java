@@ -106,12 +106,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Fragment fragment;
             if (position == 0) {
                 fragment = new NewControlFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt(NewControlFragment.ARG_SECTION_NUMBER, position + 1);
-                fragment.setArguments(bundle);
-                
             } else if (position == 1){  
-                fragment = new Fragment();
+                fragment = new LoggedControlsFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(NewControlFragment.ARG_SECTION_NUMBER, position + 1);
                 fragment.setArguments(bundle);
