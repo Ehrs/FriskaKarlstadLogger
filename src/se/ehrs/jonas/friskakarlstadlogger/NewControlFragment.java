@@ -1,5 +1,6 @@
 package se.ehrs.jonas.friskakarlstadlogger;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,6 +14,11 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -48,6 +54,21 @@ public class NewControlFragment extends Fragment {
                 String text = decodedCode.getText();
                 Matcher matcher = FRISKA_KARLSTAD_QR_PATTERN.matcher(text);
                 if (matcher.matches()) {
+                	MediaPlayer mp = new MediaPlayer();
+
+                	AssetFileDescriptor descriptor;
+                	try {
+						descriptor = getActivity().getAssets().openFd("beep-9.mp3");
+	                	mp.setDataSource( descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength() );
+	                	descriptor.close();
+	                	mp.setVolume(1.0f, 1.0f);
+	                	mp.prepare();
+	                	mp.start();
+                	} catch (IOException e1) {
+                		// TODO Auto-generated catch block
+                		e1.printStackTrace();
+                	}
+                	
                 	String timestamp = String.valueOf(decodedCode.getTimestamp());
                     Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putString(timestamp, text).apply();
