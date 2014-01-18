@@ -53,8 +53,8 @@ public class NewControlFragment extends Fragment {
             	System.out.println("DEBUG 1: We have a code!");
                 String text = decodedCode.getText();
                 Matcher matcher = FRISKA_KARLSTAD_QR_PATTERN.matcher(text);
+                MediaPlayer mp = new MediaPlayer();
                 if (matcher.matches()) {
-                	MediaPlayer mp = new MediaPlayer();
 
                 	AssetFileDescriptor descriptor;
                 	try {
@@ -73,6 +73,18 @@ public class NewControlFragment extends Fragment {
                     Editor editor = getActivity().getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putString(timestamp, text).apply();
                 } else {
+                	AssetFileDescriptor descriptor;
+                	try {
+						descriptor = getActivity().getAssets().openFd("negative.wav");
+	                	mp.setDataSource( descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength() );
+	                	descriptor.close();
+	                	mp.setVolume(1.0f, 1.0f);
+	                	mp.prepare();
+	                	mp.start();
+                	} catch (IOException e1) {
+                		// TODO Auto-generated catch block
+                		e1.printStackTrace();
+                	}
                     System.out.println("DEBUG 3: This cannot be a Friska Karlstad Code: '"+decodedCode.getText()+"'");
                 }
                 Map<String, ?> allPrefs = getActivity().getPreferences(Context.MODE_PRIVATE).getAll();
